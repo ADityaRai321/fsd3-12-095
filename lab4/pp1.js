@@ -1,96 +1,171 @@
+import { log } from "console";
+import { appendFile } from "fs";
+import { readFile} from "fs/promises";
+const readData=async (filename)=>{
+    try{
+    const content= await readFile(filename,"utf-8");
+    return content;
+    }catch(e){
+        console.log(e.message);
+        console.log("file not found sorryyy")
+
+    }
+    finally{
+        console.log("read data finished")
+    }
+};
+const writeData=async (filename,content)=>{
+     try {
+        await writeFile(filename, content);
+   
+     } catch (error) {
+        console.log(error.message);
+        
+     }
+};
+const appendData=async (filename, content)=>{
+    try {
+        await appendFile(filename, content)
+    } catch (error) {
+        console.log(error.message);
+       
+    };
+};
+// node if a function uses await keyword then the function must be async
+ const data= await readData("fun1.js");
+
+ console.log(data);
+ 
 import readline from "readline/promises";
-import { stdin, stdout } from "process";
-import { readFile, writeFile } from "fs/promises";
+import{stdin, stdout} from "process";
+import {readFile, writeFile} from "fs/promises";
 
 const FILE = "product.json";
 
-const getCart = async () => {
-  const data = await readFile(FILE, "utf-8");
-  return JSON.parse(data);
-};
+const getCart = async() => {
+    const data = await readFile(FILE, 'utf-8');
+    return JSON.parse(data);
 
+}
 const saveCart = async (myCart) => {
-  await writeFile(FILE, JSON.stringify(myCart, null, 2));
+    await writeFile(FILE, JSON.stringify(myCart, null, 2));
 };
 
-const addToCart = async (product) => {
-  const myCart = await getCart();
-  const isFound = myCart.find((item) => item.id === product.id);
-  if (isFound) {
-    isFound.qty += product.qty;
-  } else {
-    myCart.push(product);
-  }
-  await saveCart(myCart);
-  console.log(`product added/updated with id ${product.id} into cart`);
-};
-
-const showCart = async () => {
-  const data = await getCart();
-  console.table(data);
-  let total = 0;
-  const total = data.reduce((acc, item) => acc + item.price * item.qty, 0);
-  console.log(`Total Amount to pay: ${total} 💰`);
-};
-const removeFromCart = async (pid) => {
-  const data = await getCart();
-  const count = data.length;
-  const newData = data.filter((item) => item.id !== pid);
-  const newCount = newData.length;
-  if (count === newCount) {
-    console.log(`Product with id ${pid} not found in cart`);
-    return;
-  }
-  else {
-    await saveCart(newData);
-  console.log(`Product with id ${pid} removed from cart`);
-  console.log(`Product with id ${pid} removed from cart`);
-};
-
-
-const main = async () => {
-  let choice;
-  const cin = readline.createInterface({ input: stdin, output: stdout });
-  do {
-    console.log("Welcome to Flipkart 🤸");
-    console.log("1.......... Show cart");
-    console.log("2.......... Add Product");
-    console.log("3.......... Remove Product");
-    console.log("4.......... Update Quantity");
-    console.log("5.......... Checkout");
-    choice = await cin.question("Enter your choice:");
-    switch (Number(choice)) {
-      case 1:
-        await showCart();
-        break;
-      case 2:
-        let data = await cin.question("Enter id,name,price,qty:");
-        const [id, name, price, qty] = data
-          .split(",")
-          .map((item) => item.trim());
-        const product = {
-          id: Number(id),
-          name,
-          price: Number(price),
-          qty: Number(qty),
-        };
-        await addToCart(product);
-
-        break;
-      case 3:
-        console.log("remove product");
-        break;
-      case 4:
-        console.log("Update product quantity");
-        break;
-      case 5:
-        console.log("See you later");
-        break;
-      default:
-        console.log("Invalid choice! try again 🛑");
+const addTocart = async (product) => {
+    const myCart = await getCart();
+    const isFound = myCart.find((item) => item.id === product.id);
+    if(isFound){
+        isFound.qty += product.qty;
+    }else{
+        myCart.push(product);
     }
-  } while (choice != 5);
-  cin.close();
+    await saveCart(myCart);
+    console.log(`Product added with id ${product.id} into cart`);
 };
 
-main();
+const ShowCart = async () => {
+    const myCart = await getCart();
+    console.table(myCart);
+    let total=0;
+    total=myCart.reduce((t,item)=>t+item.qty*item.price0);
+    console.log("you have to pay Rs:",total);
+};
+
+const removeFromCart=async(pid)=>{
+    const data=await getCart();
+
+let count=data.length;
+const newdata=data.filter((item)=> item.id!==id);
+const newCount=newdata.length;
+if(count==newCount){
+    console.log(`product with id ${pid} not found`);
+    
+}
+else{
+    await saveCart(newdata);
+    console.log(`product with id${pid }delete successfully`);
+    
+}
+};
+
+
+
+const main = async ()=>{
+    let choice;
+    const cin = readline.createInterface({input: stdin, output: stdout});
+    do{
+    console.log("Welcome to Flipkart 🛒🤷‍♂️😁");
+    console.log("1.................Show Cart");
+    console.log("2.................Add to Product");
+    console.log("3.................Remove Product");
+    console.log("4.................Update Quantity");
+    console.log("5.................Checkout");
+    choice= await cin.question("Enter your choice: ");
+    switch (Number(choice)){
+        case 1:
+            await ShowCart();
+            break;
+        case 2:
+            let data = await cin.question("enter id, name,price,qty:");
+            const [id, name, price, qty] = data.split(",").map((item) => item.trim());
+            const product = {id: Number(id), name, price: Number(price), qty: Number(qty)};
+            await addTocart(product);
+
+            break;
+        case 3:
+            let removeId = await cin.question("Enter product id to remove: ");
+            await removeFromCart(Number(removeId));
+
+            break;
+        case 4:
+            console.log("Update product quantity");
+            break;
+        case 5:
+            console.log("See you later");
+            break;
+        default:
+            console.log("Invalid choice! try again😒");
+            break;
+    }
+    }while(choice!=5);
+    cin.close();
+};
+
+main();import { log } from "console";
+import { appendFile } from "fs";
+import { readFile} from "fs/promises";
+const readData=async (filename)=>{
+    try{
+    const content= await readFile(filename,"utf-8");
+    return content;
+    }catch(e){
+        console.log(e.message);
+        console.log("file not found sorryyy")
+
+    }
+    finally{
+        console.log("read data finished")
+    }
+};
+const writeData=async (filename,content)=>{
+     try {
+        await writeFile(filename, content);
+   
+     } catch (error) {
+        console.log(error.message);
+        
+     }
+};
+const appendData=async (filename, content)=>{
+    try {
+        await appendFile(filename, content)
+    } catch (error) {
+        console.log(error.message);
+       
+    };
+};
+// node if a function uses await keyword then the function must be async
+ const data= await readData("fun1.js");
+
+ console.log(data);
+ 
