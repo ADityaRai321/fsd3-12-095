@@ -23,3 +23,15 @@
  any browser can check only get method
 
 / - for other method type we use third party API Tester like postman, thunder client, echo api etc
+## request type 
+1. get - get all, get by id
+/api/products
+/api/products/101
+
+2. post : /api/products it add the products in the database
+3. put/patch : /api/products/201
+in echo API body {
+  what we have to change 
+}
+
+4. delete - /api/product/110 - it means product 
