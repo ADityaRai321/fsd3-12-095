@@ -1,16 +1,26 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "node:url";
+import exprss from "express";
+import products from "./data.js";
 
 const app = express();
 
-const filename = fileURLToPath(import.meta.url);
-const dirName = path.dirname(filename);
+//returns name,image,price of products
+app.get("/api/products", (req, res) => {
 
-app.use(express.static(path.join(dirName, "pages")));
+    let sortedProducts = products.map(({name, image, price,id})=>({
+        name,
+        image,
+        price,
+        id,
+    }));
+    res
+    .status(200)
+    .json({count:sortedProducts.length,data:sortedProducts});
+
+
+})
 
 app.use((req, res) => {
     res.status(404).send("<h1>Page not found</h1>");
 });
 
-app.listen(4444, () => console.log("prg3 is running on port 4444"));
+app.listen(4444, () => console.log("prg4 server is running on port 4444"));
